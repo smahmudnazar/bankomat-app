@@ -1,0 +1,22 @@
+server:
+  port: 80
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/bankomatapp
+    password: 1227
+    username: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  main:
+    lazy-initialization: true
+jwt:
+  secretKey: SupperKey
+  expireTime: 864000000
+
