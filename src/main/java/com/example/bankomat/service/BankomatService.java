@@ -1,15 +1,16 @@
 package com.example.bankomat.service;
 
 import com.example.bankomat.dto.ApiResponse;
-import com.example.bankomat.dto.BanknotDTO;
 import com.example.bankomat.dto.BankomatDTO;
+import com.example.bankomat.dto.MoneyDTO;
 import com.example.bankomat.entity.Bank;
-import com.example.bankomat.entity.Banknot;
 import com.example.bankomat.entity.Bankomat;
-import com.example.bankomat.entity.enums.BanknoteType;
+import com.example.bankomat.entity.Money;
+import com.example.bankomat.entity.enums.MoneyType;
 import com.example.bankomat.entity.enums.CardTypeEnum;
 import com.example.bankomat.repository.BankRepository;
 import com.example.bankomat.repository.BankomatRepository;
+import com.example.bankomat.repository.MoneyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class BankomatService {
     final BankomatRepository bankomatRepository;
     final BankRepository bankRepository;
+    final MoneyRepository moneyRepository;
 
     public ApiResponse save(BankomatDTO dto) {
         Optional<Bank> optionalBank = bankRepository.findById(dto.getBank_id());
@@ -33,10 +35,10 @@ public class BankomatService {
         bankomat.setAddress(dto.getAddress());
         bankomat.setCardType(CardTypeEnum.valueOf(dto.getCardType()));
 
-        List<Banknot> banknotList = new ArrayList<>();
-        for (BanknotDTO banknoteDTO : dto.getBanknotes()) {
-            Banknot banknot = new Banknot();
-            banknot.setBanknoteType(BanknoteType.valueOf(banknoteDTO.getBanknoteType()));
+        List<Money> banknotList = new ArrayList<>();
+        for (MoneyDTO banknoteDTO : dto.getBanknotes()) {
+            Money banknot = new Money();
+            banknot.setBanknoteType(MoneyType.valueOf(banknoteDTO.getBanknoteType()));
             banknot.setQuantity(banknoteDTO.getQuantity());
             banknot.setSumma((double) (banknot.getBanknoteType().getValue() * banknot.getQuantity()));
 
@@ -45,7 +47,7 @@ public class BankomatService {
         if (bankomat.getMax() < getSum(banknotList))
             return ApiResponse.builder().success(false).message("Siz kiritgan summa judayam ko'p").build();
 
-        bankomat.setBanknoteList(banknotList);
+        bankomat.setMoneyList(banknotList);
 
         bankomat.setBalance(getSum(banknotList));
 
@@ -65,19 +67,29 @@ public class BankomatService {
         bankomat.setAddress(dto.getAddress());
         bankomat.setCardType(CardTypeEnum.valueOf(dto.getCardType()));
 
-        List<Banknot> banknotList = new ArrayList<>();
-        for (BanknotDTO banknoteDTO : dto.getBanknotes()) {
-            Banknot banknot = new Banknot();
-            banknot.setBanknoteType(BanknoteType.valueOf(banknoteDTO.getBanknoteType()));
-            banknot.setQuantity(banknoteDTO.getQuantity());
-            banknot.setSumma((double) (banknot.getBanknoteType().getValue() * banknot.getQuantity()));
+//        List<Money> banknotList = new ArrayList<>();
+        List<Money> banknotList = bankomat.getMoneyList();
+        for (MoneyDTO banknoteDTO : dto.getBanknotes()) {
+//            Money banknot = new Money();
 
-            banknotList.add(banknot);
+            for (Money money : banknotList) {
+                Optional<Money> optionalMoney = moneyRepository.findById(money.getId());
+                if (optionalMoney.isEmpty()) return ApiResponse.builder().message("Money not found").success(false).build();
+
+                Money banknot = optionalMoney.get();
+                banknot.setBanknoteType(MoneyType.valueOf(banknoteDTO.getBanknoteType()));
+                banknot.setQuantity(banknoteDTO.getQuantity());
+                banknot.setSumma((double) (banknot.getBanknoteType().getValue() * banknot.getQuantity()));
+
+                banknotList.add(banknot);
+            }
+
+
         }
 
         if (bankomat.getMax() < getSum(banknotList))
             return ApiResponse.builder().success(false).message("Siz kiritgan summa judayam ko'p").build();
-        bankomat.setBanknoteList(banknotList);
+        bankomat.setMoneyList(banknotList);
 
         bankomat.setBalance(getSum(banknotList));
 
@@ -87,9 +99,9 @@ public class BankomatService {
     }
 
 
-    public Double getSum(List<Banknot> banknotList) {
+    public Double getSum(List<Money> banknotList) {
         double summa = 0;
-        for (Banknot banknot : banknotList) {
+        for (Money banknot : banknotList) {
             summa += banknot.getSumma();
         }
         return summa;

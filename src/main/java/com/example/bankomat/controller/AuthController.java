@@ -21,7 +21,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         UserDetails userDetails = authService.loadUserByUsername(loginDTO.getName());
         String token = jwtProvider.generateToken(loginDTO.getName());
 
@@ -29,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/loginCard")
-    public ResponseEntity loginCard(@RequestBody LoginCardDTO dto) {
+    public ResponseEntity<?> loginCard(@RequestBody LoginCardDTO dto) {
         UserDetails userDetails = authService.loadUserByUsername(dto.getCode());
         String token = jwtProvider.generateToken(dto.getCode());
 

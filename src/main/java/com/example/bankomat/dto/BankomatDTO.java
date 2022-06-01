@@ -13,6 +13,6 @@ public class BankomatDTO {
     private String cardType,address;
     private Integer bank_id;
 
-    private List<BanknotDTO> banknotes;
+    private List<MoneyDTO> banknotes;
 
 }

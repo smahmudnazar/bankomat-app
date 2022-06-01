@@ -25,7 +25,7 @@ public class Bankomat {
 
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Banknot> banknoteList;
+    private List<Money> moneyList;
 
     private Double max=1000000000d;
 

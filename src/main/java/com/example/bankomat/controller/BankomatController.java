@@ -52,7 +52,7 @@ public class BankomatController {
     }
 
     @PreAuthorize("hasAnyAuthority('BANKOMAT_CRUD', 'ADD_BANKOMAT')")
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<?> edit(@RequestBody BankomatDTO bank, @PathVariable Integer id) {
         ApiResponse apiResponse = bankomatService.edit(bank, id);
         return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 400).body(apiResponse);

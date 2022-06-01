@@ -1,7 +1,7 @@
 package com.example.bankomat.entity.enums;
 
 
-public enum BanknoteType {
+public enum MoneyType {
     MING_SOM(1000),
     IKKI_MING_SOM(2000),
     BESH_MING_SOM(5000),
@@ -19,7 +19,7 @@ public enum BanknoteType {
 
     private Integer value;
 
-    BanknoteType(Integer value) {
+    MoneyType(Integer value) {
         this.value = value;
     }
 
